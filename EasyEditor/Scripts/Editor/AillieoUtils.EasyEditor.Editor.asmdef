@@ -1,0 +1,17 @@
+{
+    "name": "AillieoUtils.EasyEditor.Editor",
+    "references": [
+        "GUID:27d5f6db4f5ee184583db2dc78e3c9da"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
