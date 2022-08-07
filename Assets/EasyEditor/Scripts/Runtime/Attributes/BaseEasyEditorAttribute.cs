@@ -1,8 +1,8 @@
 using System;
 
-namespace EasyEditor
+namespace AillieoUtils.EasyEditor
 {
-	public class BaseEasyEditorAttribute : Attribute
-	{
-	}
+    public class BaseEasyEditorAttribute : Attribute
+    {
+    }
 }

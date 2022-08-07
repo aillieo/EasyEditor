@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using EasyEditor;
+using AillieoUtils.EasyEditor;
 public class TestMonoBehaviour : MonoBehaviour
 {
     [Button]

@@ -1,7 +1,9 @@
 {
     "name": "AillieoUtils.EasyEditor.Editor",
+    "rootNamespace": "",
     "references": [
-        "GUID:27d5f6db4f5ee184583db2dc78e3c9da"
+        "AillieoUtils.EasyEditor",
+        "AillieoUtils.ReflectionUtils"
     ],
     "includePlatforms": [
         "Editor"

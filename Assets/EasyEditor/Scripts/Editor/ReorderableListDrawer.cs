@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace EasyEditor.Editor
+namespace AillieoUtils.EasyEditor.Editor
 {
     [EasyEditorDrawer(typeof(ReorderableListAttribute))]
     public class ReorderableListDrawer : BaseEasyEditorDrawer
