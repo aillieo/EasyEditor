@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 
-namespace EasyEditor.Editor
+namespace AillieoUtils.EasyEditor.Editor
 {
     [CanEditMultipleObjects]
     [CustomEditor(typeof(UnityEngine.Object), true)]
@@ -13,17 +13,16 @@ namespace EasyEditor.Editor
         private IEnumerable<MethodInfo> methodsForButtons;
         private IEnumerable<PropertyInfo> propertiesToDraw;
 
-
         protected virtual void OnEnable()
         {
             if(methodsForButtons == null)
             {
-                methodsForButtons = ReflectionUtils.GetAllAccessibleMethods(target, m => m.GetCustomAttributes(typeof(ButtonAttribute), true).Length > 0);
+                methodsForButtons = AillieoUtils.ReflectionUtils.GetAllAccessibleMethods(target, m => m.GetCustomAttributes(typeof(ButtonAttribute), true).Length > 0);
             }
 
             if (propertiesToDraw == null)
             {
-                propertiesToDraw = ReflectionUtils.GetAllAccessibleProperties(target, m => m.GetCustomAttributes(typeof(ShowInInspectorAttribute), true).Length > 0);
+                propertiesToDraw = AillieoUtils.ReflectionUtils.GetAllAccessibleProperties(target, m => m.GetCustomAttributes(typeof(ShowInInspectorAttribute), true).Length > 0);
             }
         }
 

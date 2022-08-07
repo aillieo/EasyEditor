@@ -4,52 +4,52 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace EasyEditor.Editor
+namespace AillieoUtils.EasyEditor.Editor
 {
     public static class EasyEditorGUILayout
-	{
-		public static void Button(UnityEngine.Object target, MethodInfo methodInfo)
-		{
-			if (!methodInfo.GetParameters().Any(p => !p.IsOptional))
-			{
-				ButtonAttribute buttonAttribute = (ButtonAttribute)methodInfo.GetCustomAttributes(typeof(ButtonAttribute), true)[0];
-				string buttonText = string.IsNullOrEmpty(buttonAttribute.label) ? ObjectNames.NicifyVariableName(methodInfo.Name) : buttonAttribute.label;
+    {
+        public static void Button(UnityEngine.Object target, MethodInfo methodInfo)
+        {
+            if (!methodInfo.GetParameters().Any(p => !p.IsOptional))
+            {
+                ButtonAttribute buttonAttribute = (ButtonAttribute)methodInfo.GetCustomAttributes(typeof(ButtonAttribute), true)[0];
+                string buttonText = string.IsNullOrEmpty(buttonAttribute.label) ? ObjectNames.NicifyVariableName(methodInfo.Name) : buttonAttribute.label;
 
-				GUILayout.BeginHorizontal();
-				GUILayout.FlexibleSpace();
-				if (GUILayout.Button(buttonText, new GUIStyle("button"), GUILayout.Width(220)))
-				{
-					object[] defaultParams = methodInfo.GetParameters().Select(p => p.DefaultValue).ToArray();
-					methodInfo.Invoke(target, defaultParams);
-				}
-				GUILayout.FlexibleSpace();
-				GUILayout.EndHorizontal();
+                GUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button(buttonText, new GUIStyle("button"), GUILayout.Width(220)))
+                {
+                    object[] defaultParams = methodInfo.GetParameters().Select(p => p.DefaultValue).ToArray();
+                    methodInfo.Invoke(target, defaultParams);
+                }
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
 
-				EditorGUI.EndDisabledGroup();
-			}
-			else
-			{
-				EditorGUILayout.HelpBox($"{nameof(ButtonAttribute)} can only be used for methods with no args", MessageType.Warning);
-			}
-		}
+                EditorGUI.EndDisabledGroup();
+            }
+            else
+            {
+                EditorGUILayout.HelpBox($"{nameof(ButtonAttribute)} can only be used for methods with no args", MessageType.Warning);
+            }
+        }
 
-		public static void DrawProperty(UnityEngine.Object tar, PropertyInfo propertyInfo)
-		{
-			var value = propertyInfo.GetValue(tar);
-			EditorGUI.BeginChangeCheck ();
-			value = AnyTypeField(propertyInfo.Name, value, $"{nameof(ShowInInspectorAttribute)} can not be used on type {value.GetType()}");
-			if (EditorGUI.EndChangeCheck())
-			{
-				propertyInfo.SetValue(tar, value);
-			}
-		}
+        public static void DrawProperty(UnityEngine.Object tar, PropertyInfo propertyInfo)
+        {
+            var value = propertyInfo.GetValue(tar);
+            EditorGUI.BeginChangeCheck ();
+            value = AnyTypeField(propertyInfo.Name, value, $"{nameof(ShowInInspectorAttribute)} can not be used on type {value.GetType()}");
+            if (EditorGUI.EndChangeCheck())
+            {
+                propertyInfo.SetValue(tar, value);
+            }
+        }
 
-		public static object AnyTypeField(string label, object value, string messageOnFail = null)
-		{
-			switch (value)
-			{
-				case int intValue:
-					return EditorGUILayout.IntField(label, intValue);
+        public static object AnyTypeField(string label, object value, string messageOnFail = null)
+        {
+            switch (value)
+            {
+                case int intValue:
+                    return EditorGUILayout.IntField(label, intValue);
                 case bool boolValue:
                     return EditorGUILayout.Toggle(label, boolValue);
                 case long longValue:
@@ -85,8 +85,8 @@ namespace EasyEditor.Editor
                 case AnimationCurve animationCurveValue:
                     return EditorGUILayout.CurveField(label, animationCurveValue);
                 default:
-					break;
-			}
+                    break;
+            }
 
             if (value.GetType().BaseType == typeof(Enum))
             {
@@ -106,6 +106,6 @@ namespace EasyEditor.Editor
             EditorGUILayout.HelpBox(messageOnFail, MessageType.Warning);
 
             return value;
-		}
-	}
+        }
+    }
 }

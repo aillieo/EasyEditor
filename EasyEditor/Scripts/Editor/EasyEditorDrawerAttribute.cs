@@ -1,6 +1,6 @@
 using System;
 
-namespace EasyEditor.Editor
+namespace AillieoUtils.EasyEditor.Editor
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public sealed class EasyEditorDrawerAttribute : Attribute

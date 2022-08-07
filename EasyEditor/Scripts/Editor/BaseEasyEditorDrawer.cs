@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace EasyEditor.Editor
+namespace AillieoUtils.EasyEditor.Editor
 {
     public abstract class BaseEasyEditorDrawer
     {

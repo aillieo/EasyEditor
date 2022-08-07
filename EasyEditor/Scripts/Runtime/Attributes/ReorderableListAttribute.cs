@@ -1,9 +1,9 @@
 using System;
 
-namespace EasyEditor
+namespace AillieoUtils.EasyEditor
 {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
-	public class ReorderableListAttribute : BaseEasyEditorAttribute
+    public class ReorderableListAttribute : BaseEasyEditorAttribute
     {
-	}
+    }
 }
