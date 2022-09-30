@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -15,26 +16,29 @@ namespace AillieoUtils.EasyEditor.Editor
 
         protected virtual void OnEnable()
         {
-            if(methodsForButtons == null)
+            Type type = target.GetType();
+
+            if (methodsForButtons == null)
             {
-                methodsForButtons = AillieoUtils.ReflectionUtils.GetAllAccessibleMethods(target, m => m.GetCustomAttributes(typeof(ButtonAttribute), true).Length > 0);
+                methodsForButtons = AillieoUtils.ReflectionUtils.GetAllAccessibleMethods(type, m => m.GetCustomAttributes(typeof(ButtonAttribute), true).Length > 0);
             }
 
             if (propertiesToDraw == null)
             {
-                propertiesToDraw = AillieoUtils.ReflectionUtils.GetAllAccessibleProperties(target, m => m.GetCustomAttributes(typeof(ShowInInspectorAttribute), true).Length > 0);
+                propertiesToDraw = AillieoUtils.ReflectionUtils.GetAllAccessibleProperties(type, m => m.GetCustomAttributes(typeof(ShowInInspectorAttribute), true).Length > 0);
             }
         }
 
         protected virtual void OnDisable()
         {
-            foreach(var drawer in cachedDrawers)
+            foreach (var drawer in cachedDrawers)
             {
-                if(drawer.Value != null)
+                if (drawer.Value != null)
                 {
                     drawer.Value.CleanUp();
                 }
             }
+
             cachedDrawers.Clear();
         }
 

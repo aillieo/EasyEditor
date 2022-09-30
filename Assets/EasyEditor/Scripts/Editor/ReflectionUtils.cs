@@ -12,7 +12,7 @@ namespace AillieoUtils.EasyEditor.Editor
         public static T[] GetCustomAttributes<T>(SerializedProperty property) where T : class
         {
             object target = property.serializedObject.targetObject;
-            FieldInfo fieldInfo = AillieoUtils.ReflectionUtils.GetFieldEx(target, property.name);
+            FieldInfo fieldInfo = AillieoUtils.ReflectionUtils.GetFieldEx(target.GetType(), property.name);
             if (fieldInfo == null)
             {
                 return Array.Empty<T>();
