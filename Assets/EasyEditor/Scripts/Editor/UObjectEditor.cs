@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using AillieoUtils.CSReflectionUtils;
 using UnityEditor;
 
 namespace AillieoUtils.EasyEditor.Editor
@@ -20,12 +21,12 @@ namespace AillieoUtils.EasyEditor.Editor
 
             if (methodsForButtons == null)
             {
-                methodsForButtons = AillieoUtils.ReflectionUtils.GetAllAccessibleMethods(type, m => m.GetCustomAttributes(typeof(ButtonAttribute), true).Length > 0);
+                methodsForButtons = ReflectionUtils.GetAllAccessibleMethods(type, m => m.GetCustomAttributes(typeof(ButtonAttribute), true).Length > 0);
             }
 
             if (propertiesToDraw == null)
             {
-                propertiesToDraw = AillieoUtils.ReflectionUtils.GetAllAccessibleProperties(type, m => m.GetCustomAttributes(typeof(ShowInInspectorAttribute), true).Length > 0);
+                propertiesToDraw = ReflectionUtils.GetAllAccessibleProperties(type, m => m.GetCustomAttributes(typeof(ShowInInspectorAttribute), true).Length > 0);
             }
         }
 
@@ -35,7 +36,7 @@ namespace AillieoUtils.EasyEditor.Editor
             {
                 if (drawer.Value != null)
                 {
-                    drawer.Value.CleanUp();
+                    drawer.Value.Cleanup();
                 }
             }
 
@@ -73,11 +74,12 @@ namespace AillieoUtils.EasyEditor.Editor
                         BaseEasyEditorDrawer drawer;
                         if (!cachedDrawers.TryGetValue(propertyName, out drawer))
                         {
-                            drawer = ReflectionUtils.TryCreateDrawerInstanceForProperty(property);
+                            drawer = ReflectionUtilsInternal.TryCreateDrawerInstanceForProperty(property);
                             if (drawer != null)
                             {
                                 drawer.Init(property);
                             }
+
                             cachedDrawers[propertyName] = drawer;
                         }
 
@@ -122,6 +124,5 @@ namespace AillieoUtils.EasyEditor.Editor
                 }
             }
         }
-
     }
 }

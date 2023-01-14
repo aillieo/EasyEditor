@@ -22,6 +22,7 @@ namespace AillieoUtils.EasyEditor.Editor
                     object[] defaultParams = methodInfo.GetParameters().Select(p => p.DefaultValue).ToArray();
                     methodInfo.Invoke(target, defaultParams);
                 }
+
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
 
@@ -36,7 +37,7 @@ namespace AillieoUtils.EasyEditor.Editor
         public static void DrawProperty(UnityEngine.Object tar, PropertyInfo propertyInfo)
         {
             var value = propertyInfo.GetValue(tar);
-            EditorGUI.BeginChangeCheck ();
+            EditorGUI.BeginChangeCheck();
             value = AnyTypeField(propertyInfo.Name, value, $"{nameof(ShowInInspectorAttribute)} can not be used on type {value.GetType()}");
             if (EditorGUI.EndChangeCheck())
             {
@@ -98,7 +99,7 @@ namespace AillieoUtils.EasyEditor.Editor
                 return EditorGUILayout.ObjectField(label, (UnityEngine.Object)value, value.GetType(), true);
             }
 
-            if(string.IsNullOrEmpty(messageOnFail))
+            if (string.IsNullOrEmpty(messageOnFail))
             {
                 messageOnFail = $"{value.GetType()} is not supported by method {nameof(AnyTypeField)}";
             }

@@ -33,15 +33,16 @@ namespace AillieoUtils.EasyEditor.Editor
                             field.width -= labelWidth;
 
                             EditorGUI.LabelField(label, new GUIContent($"[{index}]"));
-                            EditorGUI.PropertyField(field, element, GUIContent.none,true);
+                            EditorGUI.PropertyField(field, element, GUIContent.none, true);
                         },
 
                         elementHeightCallback = (int index) =>
                         {
                             return EditorGUI.GetPropertyHeight(property.GetArrayElementAtIndex(index));
-                        }
+                        },
                     };
                 }
+
                 reorderableList.DoLayoutList();
             }
             else
@@ -55,7 +56,7 @@ namespace AillieoUtils.EasyEditor.Editor
         {
         }
 
-        public override void CleanUp()
+        public override void Cleanup()
         {
         }
     }

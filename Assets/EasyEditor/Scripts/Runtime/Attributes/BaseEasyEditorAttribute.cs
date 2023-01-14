@@ -2,7 +2,7 @@ using System;
 
 namespace AillieoUtils.EasyEditor
 {
-    public class BaseEasyEditorAttribute : Attribute
+    public abstract class BaseEasyEditorAttribute : Attribute
     {
     }
 }
