@@ -59,12 +59,12 @@ namespace AillieoUtils.EasyEditor.Editor
                         nameIndexLookup.Add(typeName, templateTypeIndex);
                     }
 
-                    EditorGUI.BeginChangeCheck();
                     Rect lineRect = position;
                     lineRect.height = EditorGUIUtility.singleLineHeight;
-                    templateTypeIndex = EditorGUI.Popup(lineRect, templateTypeIndex, subTypeNames);
-                    if (EditorGUI.EndChangeCheck())
+                    int newTemplateTypeIndex = EditorGUI.Popup(lineRect, templateTypeIndex, subTypeNames);
+                    if (newTemplateTypeIndex != templateTypeIndex)
                     {
+                        templateTypeIndex = newTemplateTypeIndex;
                         string selectedTypeName = subTypeNames[templateTypeIndex];
                         Type selectedType = subTypes[selectedTypeName];
                         property.serializedObject.Update();

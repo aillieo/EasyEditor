@@ -6,9 +6,10 @@ using UnityEngine;
 
 namespace AillieoUtils.EasyEditor.Editor
 {
-    [EasyEditorDrawer(typeof(VisibilityControlAttribute))]
-    public class VisibilityControlDrawer : BaseEasyEditorDrawer
+    [EasyEditorDrawer(typeof(ErrorCheckAttribute))]
+    public class ErrorCheckDrawer : BaseEasyEditorDrawer
     {
+        private string errorMessage;
         private string condition;
         private object refValue;
 
@@ -20,17 +21,19 @@ namespace AillieoUtils.EasyEditor.Editor
         {
             if (string.IsNullOrEmpty(attributeInvalidMessage))
             {
-                bool show = Evaluate(property);
+                bool drawError = this.Evaluate(property);
 
                 if (invert)
                 {
-                    show = !show;
+                    drawError = !drawError;
                 }
 
-                if (show)
+                if (drawError)
                 {
-                    EditorGUILayout.PropertyField(property);
+                    EditorGUILayout.HelpBox(errorMessage, MessageType.Error);
                 }
+
+                EditorGUILayout.PropertyField(property);
             }
             else
             {
@@ -41,12 +44,13 @@ namespace AillieoUtils.EasyEditor.Editor
 
         public override void Init(SerializedProperty property)
         {
-            VisibilityControlAttribute vcAttribute = EasyEditorUtils.GetCustomAttribute<VisibilityControlAttribute>(property);
+            ErrorCheckAttribute ecAttribute = EasyEditorUtils.GetCustomAttribute<ErrorCheckAttribute>(property);
 
-            invert = vcAttribute is HideIfAttribute;
+            invert = ecAttribute is ErrorIfNotAttribute;
 
-            condition = vcAttribute.condition;
-            refValue = vcAttribute.refValue;
+            errorMessage = ecAttribute.errorMessage;
+            condition = ecAttribute.condition;
+            refValue = ecAttribute.refValue;
 
             attributeInvalidMessage = EasyEditorUtils.ValidateEvaluationParameters(property.serializedObject.targetObject, condition, refValue);
 

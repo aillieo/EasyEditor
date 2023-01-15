@@ -9,14 +9,14 @@ namespace AillieoUtils.EasyEditor
         public readonly string condition;
         public readonly object refValue;
 
-        public ErrorCheckAttribute(string errorMessage, string condition, object refValue)
+        internal ErrorCheckAttribute(string errorMessage, string condition, object refValue)
         {
             this.errorMessage = errorMessage;
             this.condition = condition;
             this.refValue = refValue;
         }
 
-        public ErrorCheckAttribute(string errorMessage, string condition)
+        internal ErrorCheckAttribute(string errorMessage, string condition)
             : this(errorMessage, condition, true)
         {
         }

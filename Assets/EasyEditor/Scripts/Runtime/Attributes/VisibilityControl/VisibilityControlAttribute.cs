@@ -8,13 +8,13 @@ namespace AillieoUtils.EasyEditor
         public readonly string condition;
         public readonly object refValue;
 
-        public VisibilityControlAttribute(string condition, object refValue)
+        internal VisibilityControlAttribute(string condition, object refValue)
         {
             this.condition = condition;
             this.refValue = refValue;
         }
 
-        public VisibilityControlAttribute(string condition)
+        internal VisibilityControlAttribute(string condition)
             : this(condition, true)
         {
         }

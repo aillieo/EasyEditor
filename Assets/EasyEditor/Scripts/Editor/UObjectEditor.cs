@@ -74,7 +74,7 @@ namespace AillieoUtils.EasyEditor.Editor
                         BaseEasyEditorDrawer drawer;
                         if (!cachedDrawers.TryGetValue(propertyName, out drawer))
                         {
-                            drawer = ReflectionUtilsInternal.TryCreateDrawerInstanceForProperty(property);
+                            drawer = EasyEditorUtils.TryCreateDrawerInstanceForProperty(property);
                             if (drawer != null)
                             {
                                 drawer.Init(property);

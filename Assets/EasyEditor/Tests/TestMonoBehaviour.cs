@@ -30,4 +30,7 @@ public class TestMonoBehaviour : MonoBehaviour
         }
         get { return backValue; }
     }
+
+    [AssetPath]
+    public string prefab;
 }

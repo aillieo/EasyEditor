@@ -15,4 +15,12 @@ public class TestMonoBehaviourShowIf : MonoBehaviour
     public string textB;
     [ShowIf("ShowC")]
     public string textC;
+
+    public int showD = 0;
+    [ShowIf("showD", 1)]
+    public string textD;
+
+    public PrimitiveType showE = default;
+    [ShowIf("showE", PrimitiveType.Sphere)]
+    public string textE;
 }
