@@ -80,7 +80,7 @@ namespace AillieoUtils.EasyEditor.Editor
             {
                 case MemberTypes.Field:
                     FieldInfo fieldInfo = memberInfo as FieldInfo;
-                    if (!fieldInfo.FieldType.IsAssignableFrom(refValue.GetType()))
+                    if (!fieldInfo.FieldType.IsInstanceOfType(refValue))
                     {
                         return $"Type not match: field condition({fieldInfo.FieldType}) while ref value({refValue.GetType()})";
                     }
@@ -88,7 +88,7 @@ namespace AillieoUtils.EasyEditor.Editor
                     break;
                 case MemberTypes.Property:
                     PropertyInfo propertyInfo = memberInfo as PropertyInfo;
-                    if (!propertyInfo.PropertyType.IsAssignableFrom(refValue.GetType()))
+                    if (!propertyInfo.PropertyType.IsInstanceOfType(refValue))
                     {
                         return $"Type not match: property condition({propertyInfo.PropertyType}) while ref value({refValue.GetType()})";
                     }
@@ -99,10 +99,10 @@ namespace AillieoUtils.EasyEditor.Editor
                     ParameterInfo[] parameters = methodInfo.GetParameters();
                     if (parameters != null && parameters.Length > 0)
                     {
-                        return $"Only methods with 0 arguement can be supported: {condition} {parameters.Length}";
+                        return $"Only methods with 0 argument can be supported: {condition} {parameters.Length}";
                     }
 
-                    if (!methodInfo.ReturnType.IsAssignableFrom(refValue.GetType()))
+                    if (!methodInfo.ReturnType.IsInstanceOfType(refValue))
                     {
                         return $"Type not match: method condition({methodInfo.ReturnType}) while ref value({refValue.GetType()})";
                     }
@@ -119,19 +119,24 @@ namespace AillieoUtils.EasyEditor.Editor
         {
             object result = default;
 
-            switch (conditionMember)
+            try
             {
-                case FieldInfo fieldInfo:
-                    result = fieldInfo.GetValue(targetObject);
-                    break;
-                case PropertyInfo propertyInfo:
-                    result = propertyInfo.GetValue(targetObject);
-                    break;
-                case MethodInfo methodInfo:
-                    result = methodInfo.Invoke(targetObject, null);
-                    break;
-                default:
-                    break;
+                switch (conditionMember)
+                {
+                    case FieldInfo fieldInfo:
+                        result = fieldInfo.GetValue(targetObject);
+                        break;
+                    case PropertyInfo propertyInfo:
+                        result = propertyInfo.GetValue(targetObject);
+                        break;
+                    case MethodInfo methodInfo:
+                        result = methodInfo.Invoke(targetObject, null);
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
             }
 
             if ((result == null && refValue != null) || (result != null && refValue == null))
@@ -139,14 +144,21 @@ namespace AillieoUtils.EasyEditor.Editor
                 return false;
             }
 
+            if (result == null && refValue == null)
+            {
+                return true;
+            }
+
             Type resultType = result.GetType();
 
             if (typeof(IComparable).IsAssignableFrom(resultType) || resultType.IsValueType || resultType.IsPrimitive)
             {
-                IComparable valueComparer = result as IComparable;
-                if (valueComparer != null && valueComparer.CompareTo(refValue) != 0)
+                if (result is IComparable comparable)
                 {
-                    result = false;
+                    if (comparable.CompareTo(refValue) != 0)
+                    {
+                        result = false;
+                    }
                 }
 
                 if (object.Equals(result, refValue))

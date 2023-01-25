@@ -51,24 +51,7 @@ namespace AillieoUtils.EasyEditor.Editor
             attributeInvalidMessage = EasyEditorUtils.ValidateEvaluationParameters(property.serializedObject.targetObject, condition, refValue);
 
             Type objectType = property.serializedObject.targetObject.GetType();
-            MemberInfo mi = objectType.GetMember(condition).FirstOrDefault();
-            if (mi == null)
-            {
-                Debug.LogError($"Condition not found: {condition} in {objectType}");
-                return;
-            }
-
-            switch (mi.MemberType)
-            {
-                case MemberTypes.Field:
-                case MemberTypes.Property:
-                case MemberTypes.Method:
-                    this.memberInfo = mi;
-                    break;
-                default:
-                    Debug.LogError($"Condition member type not supported: {condition} in {objectType}({mi.MemberType})");
-                    break;
-            }
+            this.memberInfo = objectType.GetMember(condition).FirstOrDefault();
         }
 
         public override void Cleanup()

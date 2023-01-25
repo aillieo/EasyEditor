@@ -12,79 +12,88 @@ namespace AillieoUtils.EasyEditor.Editor
 
     public class SerializeReferenceSelectorDrawer : PropertyDrawer
     {
+        private static readonly Dictionary<string, Type> fieldTypeNameToTypeCache = new Dictionary<string, Type>();
         private static readonly Dictionary<Type, Dictionary<string, Type>> templateTypes = new Dictionary<Type, Dictionary<string, Type>>();
         private static readonly Dictionary<Type, string[]> templateTypeNames = new Dictionary<Type, string[]>();
         private static readonly Dictionary<Type, Dictionary<string, int>> templateTypeNameLookup = new Dictionary<Type, Dictionary<string, int>>();
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            EnsureTypeCache();
+            Type keyType = GetKeyType(property);
+
+            EnsureTypeCache(keyType);
 
             return EditorGUI.GetPropertyHeight(property, property.isExpanded);
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            EnsureTypeCache();
+            Type keyType = GetKeyType(property);
 
-            Type keyType = fieldInfo.FieldType;
+            EnsureTypeCache(keyType);
+
             Dictionary<string, Type> subTypes = templateTypes[keyType];
             string[] subTypeNames = templateTypeNames[keyType];
 
             EditorGUI.BeginProperty(position, label, property);
 
-            if (subTypeNames.Length == 0)
+            if (subTypeNames.Length == 1 && subTypeNames[0] == "<null>")
             {
                 EditorGUI.LabelField(position, $"No compatible types found for {keyType.Name}");
             }
             else
             {
+                int templateTypeIndex = 0;
                 string managedReferenceFullTypename = property.managedReferenceFullTypename;
-                if (string.IsNullOrEmpty(managedReferenceFullTypename))
-                {
-                    string firstTypeName = subTypeNames[0];
-                    Type type = subTypes[firstTypeName];
-                    property.serializedObject.Update();
-                    property.managedReferenceValue = Activator.CreateInstance(type);
-                    property.serializedObject.ApplyModifiedProperties();
-                }
-                else
+                if (!string.IsNullOrEmpty(managedReferenceFullTypename))
                 {
                     string typeName = managedReferenceFullTypename.Substring(managedReferenceFullTypename.IndexOf(' ') + 1);
                     Dictionary<string, int> nameIndexLookup = templateTypeNameLookup[keyType];
 
-                    if (!nameIndexLookup.TryGetValue(typeName, out int templateTypeIndex))
+                    if (!nameIndexLookup.TryGetValue(typeName, out templateTypeIndex))
                     {
                         templateTypeIndex = Array.IndexOf(subTypeNames, typeName);
-                        nameIndexLookup.Add(typeName, templateTypeIndex);
-                    }
-
-                    Rect lineRect = position;
-                    lineRect.height = EditorGUIUtility.singleLineHeight;
-                    int newTemplateTypeIndex = EditorGUI.Popup(lineRect, templateTypeIndex, subTypeNames);
-                    if (newTemplateTypeIndex != templateTypeIndex)
-                    {
-                        templateTypeIndex = newTemplateTypeIndex;
-                        string selectedTypeName = subTypeNames[templateTypeIndex];
-                        Type selectedType = subTypes[selectedTypeName];
-                        property.serializedObject.Update();
-                        property.managedReferenceValue = Activator.CreateInstance(selectedType);
-                        property.serializedObject.ApplyModifiedProperties();
+                        if (templateTypeIndex >= 0)
+                        {
+                            nameIndexLookup.Add(typeName, templateTypeIndex);
+                        }
+                        else
+                        {
+                            templateTypeIndex = 0;
+                        }
                     }
                 }
 
+                Rect lineRect = position;
+                lineRect.height = EditorGUIUtility.singleLineHeight;
+                int newTemplateTypeIndex = EditorGUI.Popup(lineRect, property.name, templateTypeIndex, subTypeNames);
+                if (newTemplateTypeIndex != templateTypeIndex)
+                {
+                    templateTypeIndex = newTemplateTypeIndex;
+                    string selectedTypeName = subTypeNames[templateTypeIndex];
+                    object newInstance = null;
+
+                    if (templateTypeIndex != 0)
+                    {
+                        Type selectedType = subTypes[selectedTypeName];
+                        newInstance = Activator.CreateInstance(selectedType);
+                    }
+
+                    property.serializedObject.Update();
+                    property.managedReferenceValue = newInstance;
+                    property.serializedObject.ApplyModifiedProperties();
+                }
+
                 property.serializedObject.Update();
-                EditorGUI.PropertyField(position, property, property.isExpanded);
+                EditorGUI.PropertyField(position, property, GUIContent.none, property.isExpanded);
                 property.serializedObject.ApplyModifiedProperties();
             }
 
             EditorGUI.EndProperty();
         }
 
-        private void EnsureTypeCache()
+        private void EnsureTypeCache(Type keyType)
         {
-            Type keyType = fieldInfo.FieldType;
-
             if (!templateTypes.TryGetValue(keyType, out Dictionary<string, Type> types))
             {
                 types = ReflectionUtils.FindSubTypes(keyType)
@@ -94,7 +103,14 @@ namespace AillieoUtils.EasyEditor.Editor
 
             if (!templateTypeNames.TryGetValue(keyType, out string[] typeNames))
             {
-                typeNames = templateTypes[keyType].Keys.ToArray();
+                typeNames = new string[types.Count + 1];
+                typeNames[0] = "<null>";
+                int i = 1;
+                foreach (var pair in types)
+                {
+                    typeNames[i++] = pair.Key;
+                }
+
                 templateTypeNames.Add(keyType, typeNames);
             }
 
@@ -103,6 +119,19 @@ namespace AillieoUtils.EasyEditor.Editor
                 nameLookup = new Dictionary<string, int>(StringComparer.Ordinal);
                 templateTypeNameLookup.Add(keyType, nameLookup);
             }
+        }
+
+        private Type GetKeyType(SerializedProperty property)
+        {
+            string managedReferenceFieldTypename = property.managedReferenceFieldTypename;
+            if (!fieldTypeNameToTypeCache.TryGetValue(managedReferenceFieldTypename, out Type type))
+            {
+                string[] pair = managedReferenceFieldTypename.Split(' ');
+                type = Type.GetType($"{pair[1]},{pair[0]}");
+                fieldTypeNameToTypeCache.Add(managedReferenceFieldTypename, type);
+            }
+
+            return type;
         }
     }
 }
