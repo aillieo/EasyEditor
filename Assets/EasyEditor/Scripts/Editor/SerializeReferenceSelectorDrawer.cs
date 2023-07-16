@@ -8,25 +8,26 @@ using AillieoUtils.CSReflectionUtils;
 
 namespace AillieoUtils.EasyEditor.Editor
 {
-    [CustomPropertyDrawer(typeof(SerializeReferenceSelectorAttribute))]
+    [EasyEditorDrawer(typeof(SerializeReferenceSelectorAttribute))]
 
-    public class SerializeReferenceSelectorDrawer : PropertyDrawer
+    public class SerializeReferenceSelectorDrawer : BaseEasyEditorDrawer
     {
         private static readonly Dictionary<string, Type> fieldTypeNameToTypeCache = new Dictionary<string, Type>();
         private static readonly Dictionary<Type, Dictionary<string, Type>> templateTypes = new Dictionary<Type, Dictionary<string, Type>>();
         private static readonly Dictionary<Type, string[]> templateTypeNames = new Dictionary<Type, string[]>();
         private static readonly Dictionary<Type, Dictionary<string, int>> templateTypeNameLookup = new Dictionary<Type, Dictionary<string, int>>();
 
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        public override void Init(SerializedProperty property)
         {
             Type keyType = GetKeyType(property);
-
             EnsureTypeCache(keyType);
-
-            return EditorGUI.GetPropertyHeight(property, property.isExpanded);
         }
 
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        public override void Cleanup()
+        {
+        }
+
+        public override void PropertyField(SerializedProperty property)
         {
             Type keyType = GetKeyType(property);
 
@@ -35,11 +36,9 @@ namespace AillieoUtils.EasyEditor.Editor
             Dictionary<string, Type> subTypes = templateTypes[keyType];
             string[] subTypeNames = templateTypeNames[keyType];
 
-            EditorGUI.BeginProperty(position, label, property);
-
             if (subTypeNames.Length == 1 && subTypeNames[0] == "<null>")
             {
-                EditorGUI.LabelField(position, $"No compatible types found for {keyType.Name}");
+                EditorGUILayout.LabelField($"No compatible types found for {keyType.Name}");
             }
             else
             {
@@ -64,9 +63,7 @@ namespace AillieoUtils.EasyEditor.Editor
                     }
                 }
 
-                Rect lineRect = position;
-                lineRect.height = EditorGUIUtility.singleLineHeight;
-                int newTemplateTypeIndex = EditorGUI.Popup(lineRect, property.name, templateTypeIndex, subTypeNames);
+                int newTemplateTypeIndex = EditorGUILayout.Popup(property.name, templateTypeIndex, subTypeNames);
                 if (newTemplateTypeIndex != templateTypeIndex)
                 {
                     templateTypeIndex = newTemplateTypeIndex;
@@ -85,11 +82,16 @@ namespace AillieoUtils.EasyEditor.Editor
                 }
 
                 property.serializedObject.Update();
-                EditorGUI.PropertyField(position, property, GUIContent.none, property.isExpanded);
+
+                if (property.hasVisibleChildren)
+                {
+                    EditorGUI.indentLevel++;
+                    EditorGUILayout.PropertyField(property, new GUIContent(subTypeNames[templateTypeIndex]), property.isExpanded);
+                    EditorGUI.indentLevel--;
+                }
+
                 property.serializedObject.ApplyModifiedProperties();
             }
-
-            EditorGUI.EndProperty();
         }
 
         private void EnsureTypeCache(Type keyType)

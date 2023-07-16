@@ -14,6 +14,7 @@ namespace AillieoUtils.EasyEditor.Editor
         private readonly Dictionary<string, BaseEasyEditorDrawer> cachedDrawers = new Dictionary<string, BaseEasyEditorDrawer>();
         private IEnumerable<MethodInfo> methodsForButtons;
         private IEnumerable<PropertyInfo> propertiesToDraw;
+        private Dictionary<FoldableGroupAttribute, bool> foldoutState;
 
         protected virtual void OnEnable()
         {
@@ -54,44 +55,102 @@ namespace AillieoUtils.EasyEditor.Editor
         {
             serializedObject.Update();
 
-            using (var property = serializedObject.GetIterator())
-            {
-                bool enterChildren = true;
-                while (property.NextVisible(enterChildren))
-                {
-                    enterChildren = false;
-                    if (property.name.Equals("m_Script", System.StringComparison.Ordinal))
-                    {
-                        using (new EditorGUI.DisabledScope(true))
-                        {
-                            EditorGUILayout.PropertyField(property, true);
-                        }
-                    }
-                    else
-                    {
-                        string propertyName = property.name;
+            IEnumerable<IGrouping<GroupAttribute, SerializedProperty>> groupedProperties = null;
 
-                        BaseEasyEditorDrawer drawer;
-                        if (!cachedDrawers.TryGetValue(propertyName, out drawer))
-                        {
-                            drawer = EasyEditorUtils.TryCreateDrawerInstanceForProperty(property);
-                            if (drawer != null)
+            var serializedProperties = EasyEditorUtils.GetAllSerializedProperties(serializedObject);
+            if (EasyEditorUtils.HasGroupAttribute(target.GetType()))
+            {
+                groupedProperties = serializedProperties.GroupBy(property => EasyEditorUtils.GetCustomAttribute<GroupAttribute>(property));
+            }
+            else
+            {
+                groupedProperties = serializedProperties.GroupBy(property => (GroupAttribute)null);
+            }
+
+            foreach(var group in groupedProperties)
+            {
+                bool drawGroup = true;
+
+                var groupAttribue = group.Key;
+                if (groupAttribue != null)
+                {
+                    switch (groupAttribue)
+                    {
+                        case FoldableGroupAttribute foldableGroup:
+                            if (foldoutState == null)
                             {
-                                drawer.Init(property);
+                                foldoutState = new Dictionary<FoldableGroupAttribute, bool>();
                             }
 
-                            cachedDrawers[propertyName] = drawer;
-                        }
+                            if (!foldoutState.TryGetValue(foldableGroup, out bool foldout))
+                            {
+                                foldout = true;
+                            }
 
-                        if (drawer != null)
+                            foldout = EditorGUILayout.BeginFoldoutHeaderGroup(foldout, foldableGroup.name);
+                            drawGroup = foldout;
+
+                            foldoutState[foldableGroup] = foldout;
+
+                            break;
+
+                        case BoxGroupAttribute boxGroup:
+                            EditorGUILayout.BeginVertical(boxGroup.name);
+                            break;
+                    }
+                }
+
+                if (drawGroup)
+                {
+                    foreach (var property in group)
+                    {
+                        if (property.name.Equals("m_Script", System.StringComparison.Ordinal))
                         {
-                            SerializedProperty copy = property.Copy();
-                            drawer.PropertyField(copy);
+                            using (new EditorGUI.DisabledScope(true))
+                            {
+                                EditorGUILayout.PropertyField(property, true);
+                            }
                         }
                         else
                         {
-                            EditorGUILayout.PropertyField(property, true);
+                            string propertyName = property.name;
+
+                            BaseEasyEditorDrawer drawer;
+                            if (!cachedDrawers.TryGetValue(propertyName, out drawer))
+                            {
+                                drawer = EasyEditorUtils.TryCreateDrawerInstanceForProperty(property);
+                                if (drawer != null)
+                                {
+                                    drawer.Init(property);
+                                }
+
+                                cachedDrawers[propertyName] = drawer;
+                            }
+
+                            if (drawer != null)
+                            {
+                                SerializedProperty copy = property.Copy();
+                                drawer.PropertyField(copy);
+                            }
+                            else
+                            {
+                                EditorGUILayout.PropertyField(property, true);
+                            }
                         }
+                    }
+                }
+
+                if (groupAttribue != null)
+                {
+                    switch (groupAttribue)
+                    {
+                        case FoldableGroupAttribute foldableGroup:
+                            EditorGUILayout.EndFoldoutHeaderGroup();
+                            break;
+
+                        case BoxGroupAttribute boxGroup:
+                            EditorGUILayout.EndVertical();
+                            break;
                     }
                 }
             }

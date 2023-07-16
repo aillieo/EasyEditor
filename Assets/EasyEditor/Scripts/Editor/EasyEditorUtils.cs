@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using AillieoUtils.CSReflectionUtils;
 using UnityEditor;
@@ -168,6 +169,24 @@ namespace AillieoUtils.EasyEditor.Editor
             }
 
             return object.ReferenceEquals(result, refValue);
+        }
+
+        internal static IEnumerable<SerializedProperty> GetAllSerializedProperties(SerializedObject serializedObject)
+        {
+            using (var property = serializedObject.GetIterator())
+            {
+                bool enterChildren = true;
+                while (property.NextVisible(enterChildren))
+                {
+                    enterChildren = false;
+                    yield return property.Copy();
+                }
+            }
+        }
+
+        internal static bool HasGroupAttribute(Type type)
+        {
+            return type.GetMembers().Any(m => m.IsDefined(typeof(GroupAttribute), true));
         }
     }
 }
