@@ -1,11 +1,17 @@
-using System;
-using System.Linq;
-using System.Reflection;
-using UnityEditor;
-using UnityEngine;
+// -----------------------------------------------------------------------
+// <copyright file="EasyEditorGUILayout.cs" company="AillieoTech">
+// Copyright (c) AillieoTech. All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace AillieoUtils.EasyEditor.Editor
 {
+    using System;
+    using System.Linq;
+    using System.Reflection;
+    using UnityEditor;
+    using UnityEngine;
+
     public static class EasyEditorGUILayout
     {
         public static void Button(UnityEngine.Object target, MethodInfo methodInfo)

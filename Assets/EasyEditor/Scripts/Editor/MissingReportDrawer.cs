@@ -1,8 +1,14 @@
-using System;
-using UnityEditor;
+// -----------------------------------------------------------------------
+// <copyright file="MissingReportDrawer.cs" company="AillieoTech">
+// Copyright (c) AillieoTech. All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace AillieoUtils.EasyEditor.Editor
 {
+    using System;
+    using UnityEditor;
+
     public class MissingReportDrawer : BaseEasyEditorDrawer
     {
         public MissingReportDrawer(Type type)
@@ -22,7 +28,7 @@ namespace AillieoUtils.EasyEditor.Editor
 
         public override void PropertyField(SerializedProperty property)
         {
-            EditorGUILayout.HelpBox($"Default drawer will be used due to missing drawer implementation for\n[{type.Name}]{property.name}", MessageType.Warning);
+            EditorGUILayout.HelpBox($"Default drawer will be used due to missing drawer implementation for\n[{this.type.Name}]{property.name}", MessageType.Warning);
             EditorGUILayout.PropertyField(property);
         }
     }

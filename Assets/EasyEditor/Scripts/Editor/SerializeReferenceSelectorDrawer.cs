@@ -1,13 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
-using System;
-using System.Linq;
-using AillieoUtils.CSReflectionUtils;
+// -----------------------------------------------------------------------
+// <copyright file="SerializeReferenceSelectorDrawer.cs" company="AillieoTech">
+// Copyright (c) AillieoTech. All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace AillieoUtils.EasyEditor.Editor
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using AillieoUtils.CSReflectionUtils;
+    using UnityEditor;
+    using UnityEngine;
+
     [EasyEditorDrawer(typeof(SerializeReferenceSelectorAttribute))]
 
     public class SerializeReferenceSelectorDrawer : BaseEasyEditorDrawer
@@ -19,8 +25,8 @@ namespace AillieoUtils.EasyEditor.Editor
 
         public override void Init(SerializedProperty property)
         {
-            Type keyType = GetKeyType(property);
-            EnsureTypeCache(keyType);
+            Type keyType = this.GetKeyType(property);
+            this.EnsureTypeCache(keyType);
         }
 
         public override void Cleanup()
@@ -29,9 +35,9 @@ namespace AillieoUtils.EasyEditor.Editor
 
         public override void PropertyField(SerializedProperty property)
         {
-            Type keyType = GetKeyType(property);
+            Type keyType = this.GetKeyType(property);
 
-            EnsureTypeCache(keyType);
+            this.EnsureTypeCache(keyType);
 
             Dictionary<string, Type> subTypes = templateTypes[keyType];
             string[] subTypeNames = templateTypeNames[keyType];

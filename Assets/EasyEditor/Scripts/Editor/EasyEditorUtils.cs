@@ -1,13 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using AillieoUtils.CSReflectionUtils;
-using UnityEditor;
-using UnityEngine;
+// -----------------------------------------------------------------------
+// <copyright file="EasyEditorUtils.cs" company="AillieoTech">
+// Copyright (c) AillieoTech. All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace AillieoUtils.EasyEditor.Editor
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using AillieoUtils.CSReflectionUtils;
+    using UnityEditor;
+    using UnityEngine;
+
     internal static class EasyEditorUtils
     {
         public static T[] GetCustomAttributes<T>(SerializedProperty property)

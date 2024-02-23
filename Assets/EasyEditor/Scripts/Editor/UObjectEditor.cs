@@ -1,12 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using AillieoUtils.CSReflectionUtils;
-using UnityEditor;
+// -----------------------------------------------------------------------
+// <copyright file="UObjectEditor.cs" company="AillieoTech">
+// Copyright (c) AillieoTech. All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace AillieoUtils.EasyEditor.Editor
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using AillieoUtils.CSReflectionUtils;
+    using UnityEditor;
+
     [CanEditMultipleObjects]
     [CustomEditor(typeof(UnityEngine.Object), true)]
     public class UObjectEditor : UnityEditor.Editor
@@ -18,22 +24,22 @@ namespace AillieoUtils.EasyEditor.Editor
 
         protected virtual void OnEnable()
         {
-            Type type = target.GetType();
+            Type type = this.target.GetType();
 
-            if (methodsForButtons == null)
+            if (this.methodsForButtons == null)
             {
-                methodsForButtons = ReflectionUtils.GetAllAccessibleMethods(type, m => m.GetCustomAttributes(typeof(ButtonAttribute), true).Length > 0);
+                this.methodsForButtons = ReflectionUtils.GetAllAccessibleMethods(type, m => m.GetCustomAttributes(typeof(ButtonAttribute), true).Length > 0);
             }
 
-            if (propertiesToDraw == null)
+            if (this.propertiesToDraw == null)
             {
-                propertiesToDraw = ReflectionUtils.GetAllAccessibleProperties(type, m => m.GetCustomAttributes(typeof(ShowInInspectorAttribute), true).Length > 0);
+                this.propertiesToDraw = ReflectionUtils.GetAllAccessibleProperties(type, m => m.GetCustomAttributes(typeof(ShowInInspectorAttribute), true).Length > 0);
             }
         }
 
         protected virtual void OnDisable()
         {
-            foreach (var drawer in cachedDrawers)
+            foreach (var drawer in this.cachedDrawers)
             {
                 if (drawer.Value != null)
                 {
@@ -41,24 +47,24 @@ namespace AillieoUtils.EasyEditor.Editor
                 }
             }
 
-            cachedDrawers.Clear();
+            this.cachedDrawers.Clear();
         }
 
         public override void OnInspectorGUI()
         {
-            DrawDefaultInspectorEx();
-            DrawProperties();
-            DrawButtons();
+            this.DrawDefaultInspectorEx();
+            this.DrawProperties();
+            this.DrawButtons();
         }
 
         protected void DrawDefaultInspectorEx()
         {
-            serializedObject.Update();
+            this.serializedObject.Update();
 
             IEnumerable<IGrouping<GroupAttribute, SerializedProperty>> groupedProperties = null;
 
-            var serializedProperties = EasyEditorUtils.GetAllSerializedProperties(serializedObject);
-            if (EasyEditorUtils.HasGroupAttribute(target.GetType()))
+            var serializedProperties = EasyEditorUtils.GetAllSerializedProperties(this.serializedObject);
+            if (EasyEditorUtils.HasGroupAttribute(this.target.GetType()))
             {
                 groupedProperties = serializedProperties.GroupBy(property => EasyEditorUtils.GetCustomAttribute<GroupAttribute>(property));
             }
@@ -67,22 +73,22 @@ namespace AillieoUtils.EasyEditor.Editor
                 groupedProperties = serializedProperties.GroupBy(property => (GroupAttribute)null);
             }
 
-            foreach(var group in groupedProperties)
+            foreach (var group in groupedProperties)
             {
                 bool drawGroup = true;
 
-                var groupAttribue = group.Key;
-                if (groupAttribue != null)
+                var groupAttribute = group.Key;
+                if (groupAttribute != null)
                 {
-                    switch (groupAttribue)
+                    switch (groupAttribute)
                     {
                         case FoldableGroupAttribute foldableGroup:
-                            if (foldoutState == null)
+                            if (this.foldoutState == null)
                             {
-                                foldoutState = new Dictionary<FoldableGroupAttribute, bool>();
+                                this.foldoutState = new Dictionary<FoldableGroupAttribute, bool>();
                             }
 
-                            if (!foldoutState.TryGetValue(foldableGroup, out bool foldout))
+                            if (!this.foldoutState.TryGetValue(foldableGroup, out bool foldout))
                             {
                                 foldout = true;
                             }
@@ -90,7 +96,7 @@ namespace AillieoUtils.EasyEditor.Editor
                             foldout = EditorGUILayout.BeginFoldoutHeaderGroup(foldout, foldableGroup.name);
                             drawGroup = foldout;
 
-                            foldoutState[foldableGroup] = foldout;
+                            this.foldoutState[foldableGroup] = foldout;
 
                             break;
 
@@ -116,7 +122,7 @@ namespace AillieoUtils.EasyEditor.Editor
                             string propertyName = property.name;
 
                             BaseEasyEditorDrawer drawer;
-                            if (!cachedDrawers.TryGetValue(propertyName, out drawer))
+                            if (!this.cachedDrawers.TryGetValue(propertyName, out drawer))
                             {
                                 drawer = EasyEditorUtils.TryCreateDrawerInstanceForProperty(property);
                                 if (drawer != null)
@@ -124,7 +130,7 @@ namespace AillieoUtils.EasyEditor.Editor
                                     drawer.Init(property);
                                 }
 
-                                cachedDrawers[propertyName] = drawer;
+                                this.cachedDrawers[propertyName] = drawer;
                             }
 
                             if (drawer != null)
@@ -140,9 +146,9 @@ namespace AillieoUtils.EasyEditor.Editor
                     }
                 }
 
-                if (groupAttribue != null)
+                if (groupAttribute != null)
                 {
-                    switch (groupAttribue)
+                    switch (groupAttribute)
                     {
                         case FoldableGroupAttribute foldableGroup:
                             EditorGUILayout.EndFoldoutHeaderGroup();
@@ -155,31 +161,31 @@ namespace AillieoUtils.EasyEditor.Editor
                 }
             }
 
-            serializedObject.ApplyModifiedProperties();
+            this.serializedObject.ApplyModifiedProperties();
         }
 
         protected void DrawButtons()
         {
-            if (methodsForButtons.Any())
+            if (this.methodsForButtons.Any())
             {
                 EditorGUILayout.Space();
 
-                foreach (var method in methodsForButtons)
+                foreach (var method in this.methodsForButtons)
                 {
-                    EasyEditorGUILayout.Button(serializedObject.targetObject, method);
+                    EasyEditorGUILayout.Button(this.serializedObject.targetObject, method);
                 }
             }
         }
 
         protected void DrawProperties()
         {
-            if (propertiesToDraw.Any())
+            if (this.propertiesToDraw.Any())
             {
                 EditorGUILayout.Space();
 
-                foreach (var prop in propertiesToDraw)
+                foreach (var prop in this.propertiesToDraw)
                 {
-                    EasyEditorGUILayout.DrawProperty(serializedObject.targetObject, prop);
+                    EasyEditorGUILayout.DrawProperty(this.serializedObject.targetObject, prop);
                 }
             }
         }

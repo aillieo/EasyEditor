@@ -1,11 +1,17 @@
-using System;
-using System.Linq;
-using System.Reflection;
-using UnityEditor;
-using UnityEngine;
+// -----------------------------------------------------------------------
+// <copyright file="VisibilityControlDrawer.cs" company="AillieoTech">
+// Copyright (c) AillieoTech. All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace AillieoUtils.EasyEditor.Editor
 {
+    using System;
+    using System.Linq;
+    using System.Reflection;
+    using UnityEditor;
+    using UnityEngine;
+
     [EasyEditorDrawer(typeof(VisibilityControlAttribute))]
     public class VisibilityControlDrawer : BaseEasyEditorDrawer
     {
@@ -18,11 +24,11 @@ namespace AillieoUtils.EasyEditor.Editor
 
         public override void PropertyField(SerializedProperty property)
         {
-            if (string.IsNullOrEmpty(attributeInvalidMessage))
+            if (string.IsNullOrEmpty(this.attributeInvalidMessage))
             {
-                bool show = Evaluate(property);
+                bool show = this.Evaluate(property);
 
-                if (invert)
+                if (this.invert)
                 {
                     show = !show;
                 }
@@ -34,7 +40,7 @@ namespace AillieoUtils.EasyEditor.Editor
             }
             else
             {
-                EditorGUILayout.HelpBox(attributeInvalidMessage, MessageType.Error);
+                EditorGUILayout.HelpBox(this.attributeInvalidMessage, MessageType.Error);
                 EditorGUILayout.PropertyField(property);
             }
         }
@@ -43,15 +49,15 @@ namespace AillieoUtils.EasyEditor.Editor
         {
             VisibilityControlAttribute vcAttribute = EasyEditorUtils.GetCustomAttribute<VisibilityControlAttribute>(property);
 
-            invert = vcAttribute is HideIfAttribute;
+            this.invert = vcAttribute is HideIfAttribute;
 
-            condition = vcAttribute.condition;
-            refValue = vcAttribute.refValue;
+            this.condition = vcAttribute.condition;
+            this.refValue = vcAttribute.refValue;
 
-            attributeInvalidMessage = EasyEditorUtils.ValidateEvaluationParameters(property.serializedObject.targetObject, condition, refValue);
+            this.attributeInvalidMessage = EasyEditorUtils.ValidateEvaluationParameters(property.serializedObject.targetObject, this.condition, this.refValue);
 
             Type objectType = property.serializedObject.targetObject.GetType();
-            this.memberInfo = objectType.GetMember(condition).FirstOrDefault();
+            this.memberInfo = objectType.GetMember(this.condition).FirstOrDefault();
         }
 
         public override void Cleanup()
@@ -60,10 +66,10 @@ namespace AillieoUtils.EasyEditor.Editor
 
         private bool Evaluate(SerializedProperty property)
         {
-            if (memberInfo != null)
+            if (this.memberInfo != null)
             {
                 object target = property.serializedObject.targetObject;
-                return EasyEditorUtils.Evaluate(target, memberInfo, refValue);
+                return EasyEditorUtils.Evaluate(target, this.memberInfo, this.refValue);
             }
 
             return true;

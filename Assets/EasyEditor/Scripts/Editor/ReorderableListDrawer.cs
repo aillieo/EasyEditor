@@ -1,9 +1,15 @@
-using UnityEditor;
-using UnityEditorInternal;
-using UnityEngine;
+// -----------------------------------------------------------------------
+// <copyright file="ReorderableListDrawer.cs" company="AillieoTech">
+// Copyright (c) AillieoTech. All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace AillieoUtils.EasyEditor.Editor
 {
+    using UnityEditor;
+    using UnityEditorInternal;
+    using UnityEngine;
+
     [EasyEditorDrawer(typeof(ReorderableListAttribute))]
     public class ReorderableListDrawer : BaseEasyEditorDrawer
     {
@@ -14,9 +20,9 @@ namespace AillieoUtils.EasyEditor.Editor
         {
             if (property.isArray)
             {
-                if (reorderableList == null)
+                if (this.reorderableList == null)
                 {
-                    reorderableList = new ReorderableList(property.serializedObject, property)
+                    this.reorderableList = new ReorderableList(property.serializedObject, property)
                     {
                         drawHeaderCallback = (Rect rect) =>
                         {
@@ -43,7 +49,7 @@ namespace AillieoUtils.EasyEditor.Editor
                     };
                 }
 
-                reorderableList.DoLayoutList();
+                this.reorderableList.DoLayoutList();
             }
             else
             {

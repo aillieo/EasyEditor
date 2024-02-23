@@ -1,7 +1,13 @@
-using System;
+// -----------------------------------------------------------------------
+// <copyright file="ErrorCheckAttribute.cs" company="AillieoTech">
+// Copyright (c) AillieoTech. All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace AillieoUtils.EasyEditor
 {
+    using System;
+
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
     public abstract class ErrorCheckAttribute : BaseEasyEditorAttribute
     {

@@ -1,8 +1,14 @@
-using UnityEngine;
-using UnityEditor;
+// -----------------------------------------------------------------------
+// <copyright file="AssetPathDrawer.cs" company="AillieoTech">
+// Copyright (c) AillieoTech. All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace AillieoUtils.EasyEditor.Editor
 {
+    using UnityEditor;
+    using UnityEngine;
+
     [EasyEditorDrawer(typeof(AssetPathAttribute))]
     public class AssetPathDrawer : BaseEasyEditorDrawer
     {

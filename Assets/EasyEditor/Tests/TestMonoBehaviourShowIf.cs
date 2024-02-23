@@ -1,13 +1,23 @@
-using System.Collections.Generic;
-using UnityEngine;
+// -----------------------------------------------------------------------
+// <copyright file="TestMonoBehaviourShowIf.cs" company="AillieoTech">
+// Copyright (c) AillieoTech. All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
+
 using AillieoUtils.EasyEditor;
+using UnityEngine;
+
 public class TestMonoBehaviourShowIf : MonoBehaviour
 {
     public bool showA;
+
     [ShowInInspector]
     public bool showB { get; set; }
 
-    public bool ShowC() { return true; }
+    public bool ShowC()
+    {
+        return true;
+    }
 
     [ShowIf("showA")]
     public string textA;

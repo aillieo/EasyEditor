@@ -1,3 +1,9 @@
+// -----------------------------------------------------------------------
+// <copyright file="ShowIfAttribute.cs" company="AillieoTech">
+// Copyright (c) AillieoTech. All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
+
 namespace AillieoUtils.EasyEditor
 {
     public class ShowIfAttribute : VisibilityControlAttribute
